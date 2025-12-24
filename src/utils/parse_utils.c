@@ -1,5 +1,9 @@
 #include "minishell.h"
 
+/**
+ * Function to add a token to the linked-list
+ * the new token will be added to the end of the list
+ */
 void	ft_add_token(t_token **head, t_token *new_token)
 {
 	t_token *tmp;
@@ -17,6 +21,11 @@ void	ft_add_token(t_token **head, t_token *new_token)
 	tmp->next = new_token;
 }
 
+/**
+ * Auxiliary function to print the linked-list
+ * of tokens,this is  just to know if I was
+ * storing the data correctly
+ */
 void	ft_print_tokens(t_token **head)
 {
 	t_token *tmp;
@@ -28,13 +37,17 @@ void	ft_print_tokens(t_token **head)
 		tmp = tmp->next;
 	}
 }
+
+/**
+ * Function to validate if  a character is a separator
+ */
 int is_separator(char c)
 {
 	return (c == ' ' || c == '\t' || c == '|' || c == '<' || c == '>');
 }
 
 /**
- * Function to create a new token
+ * Function to create a new token.
  */
 t_token *generate_token(char *content, t_token_type type)
 {

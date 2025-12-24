@@ -23,7 +23,19 @@ typedef enum e_token_type
 
 } t_token_type;
 /**
- * Struct to represent a token
+ * Struct to represent a token.
+ * This struct will be used to store tokens, that basically
+ * are the user's input splited by spaces and separators
+ *
+ * so the user type ls -la | grep "hola mundo" we'll have
+ * 					[ls],[-la],[|],[grep],[hola mundo]
+ * and it will work in this case ls|grep a
+ * even the word has no spaces, the shell should handle it
+ * so we'll have [ls],[|],[grep],[a]
+ *
+ * After do this will convert the tokens into a real
+ * command using the t_cmd struct.
+ *
  */
 typedef struct s_token
 {
