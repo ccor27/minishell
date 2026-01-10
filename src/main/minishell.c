@@ -20,14 +20,7 @@ void	ft_init_data_struct(t_data *data, char **envp)
 {
 	data->env = envp;
     //ft_show_env_data(envp);
-	t_cmd *head;
-	head = calloc(1,sizeof(t_cmd));
-	if(!head)
-		return;
-		//TODO: handle error case
-	head->fd_input=0;
-	head->fd_output=1;
-	data->cmds=head;
+	data->cmds=NULL;
 	data->tokens=NULL;
 }
 
