@@ -22,26 +22,6 @@ void	ft_add_token(t_token **head, t_token *new_token)
 }
 
 /**
- * Function to add a new command to the
- * linked-list
- */
-void	ft_add_cmd(t_cmd **head, t_cmd *new_node)
-{
-	t_cmd *temp;
-
-    if (!*head)
-    {
-        *head = new_node;
-        return;
-    }
-    temp = *head;
-    while (temp->next)
-        temp = temp->next;
-    temp->next = new_node;
-}
-
-
-/**
  * Auxiliary function to print the linked-list
  * of tokens,this is  just to know if I was
  * storing the data correctly

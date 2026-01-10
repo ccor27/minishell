@@ -85,10 +85,11 @@ void	ft_handle_separator(int *i, char *cmd, t_data *data);
 void	ft_handle_word(int *i, char *cmd, t_data *data);
 int	ft_handle_quotes(char *cmd, int i,char quote);
 t_token_type	ft_know_type(char separator);
-//parse_utils.c
+//parse_token_utils.c
 void	ft_add_token(t_token **head, t_token *token);
 void	ft_print_tokens(t_token **head);
 t_token *generate_token(char *content, t_token_type type);
 int is_separator(char c);
+//parse_cmd_utils.c
 void	ft_add_cmd(t_cmd **head, t_cmd *new_cmd);
 #endif
