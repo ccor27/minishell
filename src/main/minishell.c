@@ -1,5 +1,17 @@
 #include "minishell.h"
 
+/* function to validate that the enviroment data 
+is correct
+void    ft_show_env_data(char **envp)
+{
+    int i = 0;
+
+    while (envp[i] != NULL)
+    {
+        printf("%s\n", envp[i]);
+        i++;
+    }
+}*/
 /**
  * Function to initialize  the data struct
  * and the first node of the linked-list
@@ -7,6 +19,7 @@
 void	ft_init_data_struct(t_data *data, char **envp)
 {
 	data->env = envp;
+    //ft_show_env_data(envp);
 	t_cmd *head;
 	head = calloc(1,sizeof(t_cmd));
 	if(!head)
@@ -25,7 +38,6 @@ int main(int argc, char **argv, char **envp)
     t_data data;
     (void)argc;//this is to avoid error for unused variables
     (void)argv;
-    (void) envp;
     signal(SIGINT,handle_sigint);
     signal(SIGQUIT,SIG_IGN);//ignore
     print_header();
