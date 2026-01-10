@@ -8,8 +8,23 @@
  * each time we find a PIPE, we do another cmd node
  */
 
-t_cmd	*ft_generate_cmd(t_token *token)
+t_cmd	*ft_generate_cmd()
 {
+	t_cmd *cmd;
+
+	cmd = malloc(sizeof(t_cmd));
+	if(!cmd)
+		return;//TODO: handle error
+	cmd->args=NULL;
+	cmd->cmd_path=NULL;
+	cmd->fd_input=-1;
+	cmd->fd_output= -1;
+	cmd->redir_in=NULL;
+	cmd->redir_out=NULL;
+	cmd->is_append=0;
+	cmd->is_heredoc=0;
+	cmd->next=NULL;
+	return (cmd);
 }
 
 /**
@@ -44,23 +59,24 @@ void	ft_parse_cmd(t_token *head, t_data *data)
 {
 	int		num_args;
 	t_token	*tmp;
-	char	**args;
 	int		i;
+	t_cmd *cmd;
 
 	num_args = 0;
 	tmp = head;
 	while (tmp)
-	{
+	{//here we have to create the cmd nodes
+		//crete the cmd node
+		cmd = ft_generate_cmd();
 		num_args = ft_count_args(tmp);
-		args = malloc((num_args + 1) * sizeof(char *));
-		if (!args)
+		cmd->args = malloc((num_args + 1) * sizeof(char *));
+		if (!cmd->args)
 			return ; // TODO: handle errors
 		i = 0;
 		while (tmp && tmp->type != PIPE)
 		{
 			// skip the redirection symbols
-			if (tmp->type == REDIRECT_IN || tmp->type == REDIRECT_OUT
-				|| tmp->type == HERE_DOC || tmp->type == APPEND)
+			if (tmp->type >= REDIRECT_IN && tmp->type <= HERE_DOC )
 			{
 				/**
 				 * validate if the next node is a word, if it so,
@@ -68,21 +84,44 @@ void	ft_parse_cmd(t_token *head, t_data *data)
 				 * (redirect_in/out, here_doc, append) and indicate
 				 * it in the cmd node
 				 */
-				if (tmp->next)
-					tmp = tmp->next;
-				else
-					break ;
+				if(tmp->next && tmp->next->type==WORD)
+				{
+					if(tmp->type == REDIRECT_IN)
+						cmd->redir_in = ft_strdup(tmp->next->content);
+					else if (tmp->type == REDIRECT_OUT)
+						cmd->redir_out = ft_strdup(tmp->next->content);
+					else if (tmp->type == APPEND)
+					{
+						cmd->redir_out = ft_strdup(tmp->next->content);
+						cmd->is_append = 1;
+					}
+					else
+					{
+						//HERE_DOC
+						cmd->redir_in = ft_strdup(tmp->next->content);
+						cmd->is_heredoc = 1;
+					}
+					tmp=tmp->next->next;//skip the redirection and the filename
+				}
+				else//handle possible error
+					return;
 			}
 			else
 			{
-				args[i++] = ft_strdup(tmp->content);
+				cmd->args[i++] = ft_strdup(tmp->content);
 				tmp = tmp->next;
 			}
 		}
-		args[i] = NULL;
+		cmd->args[i] = NULL;
+		ft_add_cmd(&data->cmds,cmd);
 		//if the token is a PIPE will move past
 		if(tmp && tmp->type == PIPE)
 			tmp = tmp->next;
-		//generate the cmd and add it to data's cmds
 	}
+	/**
+	 * TODO:
+	 * 		- split into functions
+	 * 		- create a function to print the cmds
+	 * 		- test code
+	 */
 }
