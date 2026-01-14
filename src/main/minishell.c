@@ -1,6 +1,6 @@
 #include "minishell.h"
 
-/* function to validate that the enviroment data 
+/* function to validate that the enviroment data
 is correct
 void    ft_show_env_data(char **envp)
 {
