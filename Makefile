@@ -5,7 +5,7 @@ LIBFT_DIR	= libft
 LIBFT		= $(LIBFT_DIR)/libft.a
 SRC_MAIN    = minishell.c
 SRC_UTILS   = signals.c visual_effects.c parse_token_utils.c parse_cmd_utils.c
-SRC_VALID   = parse_tokens.c
+SRC_VALID   = parse_tokens.c parse_cmd.c
 
 INCLUDES    = -I includes -I$(LIBFT_DIR)
 

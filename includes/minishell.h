@@ -90,6 +90,13 @@ void	ft_add_token(t_token **head, t_token *token);
 void	ft_print_tokens(t_token **head);
 t_token *generate_token(char *content, t_token_type type);
 int is_separator(char c);
+//parse_cmd.c
+t_cmd	*ft_generate_cmd();
+int	ft_count_args(t_token *head);
+void	ft_hanlde_cmd_parse_redirections(t_token **tmp,t_cmd *cmd);
+void	ft_fill_up_cmd(t_token **tmp,t_cmd *cmd, int *i);
+void	ft_parse_cmd(t_token *head, t_data *data);
 //parse_cmd_utils.c
 void	ft_add_cmd(t_cmd **head, t_cmd *new_cmd);
+void    ft_print_cmds(t_cmd *cmds);
 #endif

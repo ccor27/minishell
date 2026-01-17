@@ -49,7 +49,9 @@ int main(int argc, char **argv, char **envp)
             //
             //printf("The prompt received is: %s\n",input);
             ft_parse_and_store(input,&data);
-            ft_print_tokens(&data.tokens);
+            ft_parse_cmd(data.tokens,&data);
+            ft_print_cmds(data.cmds);
+            //ft_print_tokens(&data.tokens);
         }
         free(input);
     }
