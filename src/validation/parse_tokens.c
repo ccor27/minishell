@@ -95,9 +95,6 @@ void	ft_handle_separator(int *i, char *cmd, t_data *data)
 	else
 	{
 		token_type = ft_know_type(cmd[*i]);
-		if(!token_type)
-			return; //TODO: handle error
-		//TODO: find out which type of separator is
 		ft_add_token(&data->tokens,generate_token(ft_substr(cmd, *i, 1),token_type));
 		(*i)++;
 	}

@@ -12,6 +12,7 @@
 
 typedef struct s_cmd t_cmd;
 
+
 typedef enum e_token_type
 {
 	WORD,
@@ -99,4 +100,10 @@ void	ft_parse_cmd(t_token *head, t_data *data);
 //parse_cmd_utils.c
 void	ft_add_cmd(t_cmd **head, t_cmd *new_cmd);
 void    ft_print_cmds(t_cmd *cmds);
+//free_helper.c
+void    ft_free_tokens(t_token **tokens);
+void    ft_free_cmds(t_cmd **cmds);
+void    ft_free_data(t_data *data);
+//error_handler.c
+void    ft_error(t_data *data);
 #endif
