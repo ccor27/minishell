@@ -13,6 +13,7 @@
 
 typedef struct s_cmd t_cmd;
 
+
 typedef enum e_token_type
 {
 	WORD,
@@ -120,4 +121,10 @@ char	**ft_env_to_array(t_env *env_list);
 //here_doc_handler.c
 void	ft_here_doc_store_data(t_cmd *node,int tmp_file,char *tmp_file_name);
 void    ft_here_doc(t_data *data);
+//free_helper.c
+void    ft_free_tokens(t_token **tokens);
+void    ft_free_cmds(t_cmd **cmds);
+void    ft_free_data(t_data *data);
+//error_handler.c
+void    ft_error(t_data *data);
 #endif

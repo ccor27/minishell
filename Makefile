@@ -7,6 +7,7 @@ SRC_MAIN    = minishell.c
 SRC_UTILS   = signals.c visual_effects.c parse_token_utils.c parse_cmd_utils.c env_utils.c
 SRC_VALID   = parse_tokens.c parse_cmd.c
 SRC_PROCESS = here_doc_handler.c
+SRC_ERRORS	= error_handler.c free_helper.c
 
 INCLUDES    = -I includes -I$(LIBFT_DIR)
 
@@ -14,7 +15,8 @@ INCLUDES    = -I includes -I$(LIBFT_DIR)
 SRC_FILES   = $(addprefix main/,$(SRC_MAIN)) \
               $(addprefix utils/,$(SRC_UTILS)) \
               $(addprefix validation/,$(SRC_VALID)) \
-			  $(addprefix process/,$(SRC_PROCESS))
+			  $(addprefix process/,$(SRC_PROCESS)) \
+			  $(addprefix errors/,$(SRC_ERRORS))
 
 # Add 'src/' prefix to everything
 SRC         = $(addprefix src/,$(SRC_FILES))
