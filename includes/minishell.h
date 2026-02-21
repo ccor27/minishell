@@ -7,6 +7,7 @@
 #include <readline/readline.h> //for read from console
 #include <readline/history.h> //for history
 #include <signal.h> //for signals
+#include <fcntl.h>
 #include "libft.h"
 //structs
 
@@ -44,11 +45,22 @@ typedef struct s_token
 	struct s_token *next;
 } t_token;
 /**
+ * Nodes to store de data of enviroment we
+ * receive in the main, this will be a
+ * linked-list
+ */
+typedef struct s_env
+{
+	char	*key;
+	char	*value;
+	struct s_env	*next;
+} t_env;
+/**
  * Main struct to handle data
  */
 typedef struct s_data
 {
-	char **env; //A copy of enviroment variables
+	t_env *env; //A copy of enviroment variables
 	t_cmd *cmds; //The head of the linked-list
 	t_token *tokens;//
 	int exit_code; //The exit command of the last status (needed for $?)
@@ -99,4 +111,13 @@ void	ft_parse_cmd(t_token *head, t_data *data);
 //parse_cmd_utils.c
 void	ft_add_cmd(t_cmd **head, t_cmd *new_cmd);
 void    ft_print_cmds(t_cmd *cmds);
+//env_utils.c
+t_env	*ft_new_env_node(char *key,char *value);
+void	ft_env_add_back(t_env **head, t_env *new_node);
+t_env	*ft_copy_env(char  **env);
+int	ft_env_size(t_env *env);
+char	**ft_env_to_array(t_env *env_list);
+//here_doc_handler.c
+void	ft_here_doc_store_data(t_cmd *node,int tmp_file,char *tmp_file_name);
+void    ft_here_doc(t_data *data);
 #endif

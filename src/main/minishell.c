@@ -1,25 +1,28 @@
 #include "minishell.h"
 
-/* function to validate that the enviroment data
-is correct
-void    ft_show_env_data(char **envp)
-{
-    int i = 0;
+// function to validate that the enviroment data
+// is correct
+// void    ft_show_env_data(t_env **head)
+// {
+//     t_env *tmp;
+//     if(!*head)
+//         printf("The linked-list env is null\n");
+//     tmp = *head;
+//     while (tmp)
+//     {
+//         printf("key = %s value = %s\n",tmp->key,tmp->value);
+//         tmp = tmp->next;
+//     }
 
-    while (envp[i] != NULL)
-    {
-        printf("%s\n", envp[i]);
-        i++;
-    }
-}*/
+// }
 /**
  * Function to initialize  the data struct
  * and the first node of the linked-list
  */
 void	ft_init_data_struct(t_data *data, char **envp)
 {
-	data->env = envp;
-    //ft_show_env_data(envp);
+	data->env = ft_copy_env(envp);
+    //ft_show_env_data(&data->env);
 	data->cmds=NULL;
 	data->tokens=NULL;
 }
@@ -46,11 +49,14 @@ int main(int argc, char **argv, char **envp)
         if(input[0]!='\0')
         {
             add_history(input);
-            //
-            //printf("The prompt received is: %s\n",input);
             ft_parse_and_store(input,&data);
             ft_parse_cmd(data.tokens,&data);
             ft_print_cmds(data.cmds);
+            ft_here_doc(&data);
+            //validate if there are here doc and store it
+            //validate if there are expander variables and handle it
+            //validate if there are in built commands
+            //execute commands
             //ft_print_tokens(&data.tokens);
         }
         free(input);
