@@ -40,13 +40,30 @@ void    ft_free_cmds(t_cmd **cmds)
                 free(curr->args[i++]);
             free(curr->args);
         }
-        if (curr->redir_in) free(curr->redir_in);
-        if (curr->redir_out) free(curr->redir_out);
-        if (curr->cmd_path) free(curr->cmd_path);
-        
+        if (curr->redirects)
+            ft_free_redirects(curr->redirects);
+
+        if (curr->cmd_path)
+            free(curr->cmd_path);
+
         free(curr);
         curr = next;
     }
     *cmds = NULL;
 }
+
+void    ft_free_redirects(t_redirect *redir)
+{
+    t_redirect *tmp;
+
+    while (redir)
+    {
+        tmp = redir->next;
+        if (redir->file)
+            free(redir->file);
+        free(redir);
+        redir = tmp;
+    }
+}
+
 

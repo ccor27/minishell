@@ -50,14 +50,15 @@ int main(int argc, char **argv, char **envp)
         {
             add_history(input);
             ft_parse_and_store(input,&data);
+            //TODO: what should we do if the are any unclose quote?
             ft_parse_cmd(data.tokens,&data);
-            ft_print_cmds(data.cmds);
             ft_here_doc(&data);
-            //validate if there are here doc and store it
-            //validate if there are expander variables and handle it
+            ft_expanders(&data);
             //validate if there are in built commands
             //execute commands
             //ft_print_tokens(&data.tokens);
+            ft_print_cmds(data.cmds);
+            ft_free_data(&data);
         }
         free(input);
     }

@@ -24,6 +24,20 @@ typedef enum e_token_type
 	HERE_DOC //
 
 } t_token_type;
+
+/**
+ * Struct that will be use in each cmd node
+ * in order to avoid overwrite of the redir_in
+ * when we have commands like this [cat << A << B]
+ * so with this we can  simulate the shell, allowing
+ * user type first until A and then again until B
+ */
+typedef struct s_redirect
+{
+	t_token_type	type;//Is it REDIRECT_IN? HERE_DOC? APPEND?
+	char			*file;//the filename or the delimiter (for here doc)
+	struct s_redirect		*next;
+} t_redirect;
 /**
  * Struct to represent a token.
  * This struct will be used to store tokens, that basically
@@ -76,12 +90,13 @@ struct s_cmd
 	char **args; //the command + flags slpit up. ({"ls","-la",NULL})
 	char *cmd_path; //the full path found
 	//redirection information
-	int  fd_input; //input fd (0 by default)
-	int  fd_output;//output fd (1 by default)
-	char *redir_in;//name of the file to read from (if < is used)
-	char *redir_out;//name of the file to write (if > is used)
-	int  is_append;//flag
-	int  is_heredoc;//flag
+	// int  fd_input; //input fd (0 by default)
+	// int  fd_output;//output fd (1 by default)
+	// char *redir_in;//name of the file to read from (if < is used)
+	// char *redir_out;//name of the file to write (if > is used)
+	// int  is_append;//flag
+	// int  is_heredoc;//flag
+	t_redirect *redirects;
 	//the link
 	struct s_cmd *next; //pointer to the next node (if | is used)
 };
@@ -112,6 +127,9 @@ void	ft_parse_cmd(t_token *head, t_data *data);
 //parse_cmd_utils.c
 void	ft_add_cmd(t_cmd **head, t_cmd *new_cmd);
 void    ft_print_cmds(t_cmd *cmds);
+void	ft_add_cmd(t_cmd **head, t_cmd *new_node);
+t_redirect  *ft_new_redirect(t_token_type type, char *file);
+void    ft_redir_add_back(t_redirect **head, t_redirect *new_node);
 //env_utils.c
 t_env	*ft_new_env_node(char *key,char *value);
 void	ft_env_add_back(t_env **head, t_env *new_node);
@@ -119,12 +137,23 @@ t_env	*ft_copy_env(char  **env);
 int	ft_env_size(t_env *env);
 char	**ft_env_to_array(t_env *env_list);
 //here_doc_handler.c
-void	ft_here_doc_store_data(t_cmd *node,int tmp_file,char *tmp_file_name);
+void	ft_here_doc_store_data(t_redirect *redir, int tmp_file, char *tmp_file_name);
 void    ft_here_doc(t_data *data);
 //free_helper.c
 void    ft_free_tokens(t_token **tokens);
 void    ft_free_cmds(t_cmd **cmds);
 void    ft_free_data(t_data *data);
+void    ft_free_redirects(t_redirect *redir);
 //error_handler.c
 void    ft_error(t_data *data);
+//expanders.c
+void    ft_expanders(t_data *data);
+char    *ft_replace_text(char *str, t_data *data, char *dollar_pos);
+char    *ft_get_expanded_value(char *dollar_pos, t_data *data);
+//expanders_utils.c
+char    *ft_strjoin_three(char *s1, char *s2, char *s3);
+char	*get_vrb_value(char *vrb_name, t_data *data);
+int		ft_know_vrb_name_size(char *str);
+char    *find_expandable_dollar(char *str);
+char    *ft_remove_quotes_str(char *str);
 #endif

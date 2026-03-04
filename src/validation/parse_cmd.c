@@ -12,19 +12,14 @@ t_cmd	*ft_generate_cmd()
 {
 	t_cmd *cmd;
 
-	cmd = malloc(sizeof(t_cmd));
-	if(!cmd)
-		return (NULL);//TODO: handle error
-	cmd->args=NULL;
-	cmd->cmd_path=NULL;
-	cmd->fd_input=-1;
-	cmd->fd_output= -1;
-	cmd->redir_in=NULL;
-	cmd->redir_out=NULL;
-	cmd->is_append=0;
-	cmd->is_heredoc=0;
-	cmd->next=NULL;
-	return (cmd);
+    cmd = malloc(sizeof(t_cmd));
+    if(!cmd)
+        return (NULL);//TODO: handle error
+    cmd->args=NULL;
+    cmd->cmd_path=NULL;
+    cmd->redirects = NULL;
+    cmd->next=NULL;
+    return (cmd);
 }
 
 /**
@@ -41,8 +36,7 @@ int	ft_count_args(t_token *head)
 	while (tmp && tmp->type != PIPE)
 	{
 		// skip the redirection symbols
-		if (tmp->type == REDIRECT_IN || tmp->type == REDIRECT_OUT
-			|| tmp->type == HERE_DOC || tmp->type == APPEND)
+		if (tmp->type >= REDIRECT_IN && tmp->type <= HERE_DOC)
 		{
 			// to skip the filename
 			if (tmp->next)
@@ -56,32 +50,21 @@ int	ft_count_args(t_token *head)
 }
 
 //TODO: pass the data in order to free in case of error
-void	ft_hanlde_cmd_parse_redirections(t_token **tmp,t_cmd *cmd)
+void    ft_hanlde_cmd_parse_redirections(t_token **tmp, t_cmd *cmd)
 {
-	if((*tmp)->next && (*tmp)->next->type==WORD)
-	{
-		if((*tmp)->type == REDIRECT_IN)
-			cmd->redir_in = ft_strdup((*tmp)->next->content);
-		else if ((*tmp)->type == REDIRECT_OUT)
-			cmd->redir_out = ft_strdup((*tmp)->next->content);
-		else if ((*tmp)->type == APPEND)
-		{
-			cmd->redir_out = ft_strdup((*tmp)->next->content);
-			cmd->is_append = 1;
-		}
-		else
-		{
-		//HERE_DOC
-			cmd->redir_in = ft_strdup((*tmp)->next->content);
-			cmd->is_heredoc = 1;
-		}
-		(*tmp)=(*tmp)->next->next;//skip the redirection and the filename
-	}
-	else//handle possible error
-	{
-		if(*tmp)
-			*tmp=(*tmp)->next;
-	}
+    t_redirect *new_redir;
+
+    if((*tmp)->next && (*tmp)->next->type == WORD)
+    {
+        new_redir = ft_new_redirect((*tmp)->type, (*tmp)->next->content);
+        ft_redir_add_back(&cmd->redirects, new_redir);
+        (*tmp) = (*tmp)->next->next;
+    }
+    else //handle possible error
+    {
+        if(*tmp)
+            *tmp=(*tmp)->next;
+    }
 }
 
 //TODO: pass the data in order to free in case of error
@@ -89,7 +72,6 @@ void	ft_fill_up_cmd(t_token **tmp,t_cmd *cmd, int *i)
 {
 			while (*tmp && (*tmp)->type != PIPE)
 		{
-			// skip the redirection symbols
 			if ((*tmp)->type >= REDIRECT_IN && (*tmp)->type <= HERE_DOC )
 				ft_hanlde_cmd_parse_redirections(tmp,cmd);
 			else
@@ -110,8 +92,7 @@ void	ft_parse_cmd(t_token *head, t_data *data)
 	num_args = 0;
 	tmp = head;
 	while (tmp)
-	{//here we have to create the cmd nodes
-		//crete the cmd node
+	{
 		cmd = ft_generate_cmd();
 		num_args = ft_count_args(tmp);
 		cmd->args = malloc((num_args + 1) * sizeof(char *));
@@ -121,7 +102,6 @@ void	ft_parse_cmd(t_token *head, t_data *data)
 		ft_fill_up_cmd(&tmp,cmd,&i);
 		cmd->args[i] = NULL;
 		ft_add_cmd(&data->cmds,cmd);
-		//if the token is a PIPE will move past
 		if(tmp && tmp->type == PIPE)
 			tmp = tmp->next;
 	}

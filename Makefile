@@ -6,8 +6,9 @@ LIBFT		= $(LIBFT_DIR)/libft.a
 SRC_MAIN    = minishell.c
 SRC_UTILS   = signals.c visual_effects.c parse_token_utils.c parse_cmd_utils.c env_utils.c
 SRC_VALID   = parse_tokens.c parse_cmd.c
-SRC_PROCESS = here_doc_handler.c
+SRC_PROCESS = here_doc_handler.c expanders.c expanders_utils.c
 SRC_ERRORS	= error_handler.c free_helper.c
+SRC_BUILT_IN = cd.c echo.c env.c exit.c export.c pwd.c unset.c
 
 INCLUDES    = -I includes -I$(LIBFT_DIR)
 
@@ -16,7 +17,8 @@ SRC_FILES   = $(addprefix main/,$(SRC_MAIN)) \
               $(addprefix utils/,$(SRC_UTILS)) \
               $(addprefix validation/,$(SRC_VALID)) \
 			  $(addprefix process/,$(SRC_PROCESS)) \
-			  $(addprefix errors/,$(SRC_ERRORS))
+			  $(addprefix errors/,$(SRC_ERRORS))	\
+			  $(addprefix errors/,$(SRC_BUILT_IN))
 
 # Add 'src/' prefix to everything
 SRC         = $(addprefix src/,$(SRC_FILES))
