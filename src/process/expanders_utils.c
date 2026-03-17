@@ -1,5 +1,8 @@
 #include "minishell.h"
 
+/**
+ * Function to join three strings into one
+ */
 char    *ft_strjoin_three(char *s1, char *s2, char *s3)
 {
     char    *temp;
@@ -12,30 +15,40 @@ char    *ft_strjoin_three(char *s1, char *s2, char *s3)
     return (final_str);
 }
 
+/**
+ * Auxiliar function to get the value of an env variable
+ */
 char	*get_vrb_value(char *vrb_name, t_data *data)
 {
-	char *vrb_value;
-	t_env *head;
-	int vrb_name_size;
+	char	*vrb_value;
+	t_env	*head;
+	int		vrb_name_size;
 
 	vrb_value = NULL;
-	if(!vrb_name || !data->env)
+	if (!vrb_name || !data)
+		return (NULL);
+	if (ft_strncmp(vrb_name, "?", 2) == 0)
+		return (ft_itoa(data->exit_code));
+	if (!data->env)
 		return (NULL);
 	head = data->env;
 	vrb_name_size = ft_strlen(vrb_name);
-	while(head)
+	while (head)
 	{
-		if(ft_strncmp(vrb_name,head->key,vrb_name_size) == 0 &&
+		if (ft_strncmp(vrb_name, head->key, vrb_name_size) == 0 &&
 			head->key[vrb_name_size] == '\0')
 		{
 			vrb_value = ft_strdup(head->value);
-			break;
+			break ;
 		}
 		head = head->next;
 	}
 	return (vrb_value);
 }
 
+/**
+ * Function to know env variable name size
+ */
 int		ft_know_vrb_name_size(char *str)
 {
 	int len;
@@ -48,33 +61,29 @@ int		ft_know_vrb_name_size(char *str)
 		len++;
 	return(len);
 }
-// Finds a '$' ONLY if it is not inside single quotes.
-char    *find_expandable_dollar(char *str)
+
+/**
+ * Function to know if a string
+ * contains quotes
+ */
+int	ft_contains_quotes(char *str)
 {
-    int in_sq = 0; // 1 if inside single quotes ('')
-    int in_dq = 0; // 1 if inside double quotes ("")
-    int i = 0;
+	int	i;
 
-    while (str && str[i])
-    {
-        // Toggle quote states
-        if (str[i] == '\'' && !in_dq)
-            in_sq = !in_sq;
-        else if (str[i] == '\"' && !in_sq)
-            in_dq = !in_dq;
-
-        // If we find a $ and we are NOT inside single quotes
-        else if (str[i] == '$' && !in_sq)
-        {
-            // Make sure it is a valid variable name next (or ?)
-            if (str[i + 1] && (ft_isalnum(str[i + 1]) || str[i + 1] == '_' || str[i + 1] == '?'))
-                return (&str[i]);
-        }
-        i++;
-    }
-    return (NULL);
+	i = 0;
+	while (str && str[i])
+	{
+		if (str[i] == '\'' || str[i] == '\"')
+			return (1);
+		i++;
+	}
+	return (0);
 }
 
+/**
+ * Function to remove quotes from a string
+ */
+//TODO: fix this, we have 5 variables!
 char    *ft_remove_quotes_str(char *str)
 {
     int     in_sq = 0;

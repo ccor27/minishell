@@ -1,5 +1,8 @@
 #include "minishell.h"
 
+/**
+ * Function to get the value form an env variable
+ */
 char    *ft_get_expanded_value(char *dollar_pos, t_data *data)
 {
     char    *vrb_name;
@@ -12,11 +15,15 @@ char    *ft_get_expanded_value(char *dollar_pos, t_data *data)
     free(vrb_name);
 
     if (!value)
-        value = ft_strdup(""); // Replace with empty string if not found
+        value = ft_strdup("");
 
     return (value);
 }
 
+/**
+ * Function to replace the text of the env name
+ * for its value
+ */
 char    *ft_replace_text(char *str, t_data *data, char *dollar_pos)
 {
     char    *str_first_part;
@@ -40,31 +47,68 @@ char    *ft_replace_text(char *str, t_data *data, char *dollar_pos)
     return (str_replaced);
 }
 
-void    ft_expanders(t_data *data)
+/**
+ * Auxiliar function to expand variable from env
+ */
+char	*ft_expand_line(char *line, t_data *data)
 {
-    t_cmd *tmp;
-    int i;
-    char *dollar_symbol_pos;
+	char	*dollar_pos;
 
-    tmp = data->cmds;
-    while (tmp)
-    {
-        i = 0;
-        while (tmp->args && tmp->args[i])
-        {
-            // Find the pointer to the '$'
-            dollar_symbol_pos = find_expandable_dollar(tmp->args[i]);
-            // Note: We use a while loop here in case there are MULTIPLE $ in one string!
-            // (e.g., "echo $USER lives in $PWD")
-            while (dollar_symbol_pos)
-            {
-                tmp->args[i] = ft_replace_text(tmp->args[i], data, dollar_symbol_pos);
-                // Search for the next '$' in the newly updated string!
-                dollar_symbol_pos = find_expandable_dollar(tmp->args[i]);
-            }
+	dollar_pos = find_expandable_dollar(line);
+	while (dollar_pos)
+	{
+		line = ft_replace_text(line, data, dollar_pos);
+		dollar_pos = find_expandable_dollar(line);
+	}
+	return (line);
+}
+
+/**
+ * Function to expand the value of a
+ * env variable
+ */
+void	ft_expanders(t_data *data)
+{
+	t_cmd	*tmp;
+	int		i;
+
+	tmp = data->cmds;
+	while (tmp)
+	{
+		i = 0;
+		while (tmp->args && tmp->args[i])
+		{
+			tmp->args[i] = ft_expand_line(tmp->args[i], data);
 			tmp->args[i] = ft_remove_quotes_str(tmp->args[i]);
-            i++;
+			i++;
+		}
+		tmp = tmp->next;
+	}
+}
+
+/**
+ * Function to find the position of $
+ * only if it is not inside single quotes
+ */
+char    *find_expandable_dollar(char *str)
+{
+    int in_sq = 0;
+    int in_dq = 0;
+    int i = 0;
+
+    while (str && str[i])
+    {
+        if (str[i] == '\'' && !in_dq)
+            in_sq = !in_sq;
+        else if (str[i] == '\"' && !in_sq)
+            in_dq = !in_dq;
+
+        else if (str[i] == '$' && !in_sq)
+        {
+            if (str[i + 1] && (ft_isalnum(str[i + 1]) || str[i + 1] == '_' || str[i + 1] == '?'))
+                return (&str[i]);
         }
-        tmp = tmp->next;
+        i++;
     }
+    return (NULL);
 }

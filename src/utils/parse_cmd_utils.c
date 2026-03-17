@@ -22,17 +22,18 @@ void	ft_add_cmd(t_cmd **head, t_cmd *new_node)
 /**
  * Function to create a new node of redirection
  */
-t_redirect  *ft_new_redirect(t_token_type type, char *file)
+t_redirect	*ft_new_redirect(t_token_type type, char *file, int expand)
 {
-    t_redirect *node;
+	t_redirect	*node;
 
-    node = malloc(sizeof(t_redirect));
-    if (!node)
-        return (NULL);
-    node->type = type;
-    node->file = ft_strdup(file);
-    node->next = NULL;
-    return (node);
+	node = malloc(sizeof(t_redirect));
+	if (!node)
+		return (NULL);
+	node->type = type;
+	node->file = ft_strdup(file);
+	node->expand = expand;
+	node->next = NULL;
+	return (node);
 }
 
 /**

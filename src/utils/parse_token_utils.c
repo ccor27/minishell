@@ -61,3 +61,29 @@ t_token *generate_token(char *content, t_token_type type)
 	token->next = NULL;
 	return (token);
 }
+
+/**
+ * Function to validate if there are any quote
+ * unclosed
+ */
+int ft_check_unclosed_quotes(char *str)
+{
+    int i;
+    int in_sq;
+    int in_dq;
+
+    i = 0;
+    in_sq = 0;
+    in_dq = 0;
+    while (str[i])
+    {
+        if (str[i] == '\'' && !in_dq)
+            in_sq = !in_sq;
+        else if (str[i] == '\"' && !in_sq)
+            in_dq = !in_dq;
+        i++;
+    }
+    if (in_sq || in_dq)
+        return (1);
+    return (0);
+}

@@ -4,15 +4,17 @@
  * Function to create a new env_node
  * in order to add it to a linked list
  */
-t_env	*ft_new_env_node(char *key,char *value)
+t_env	*ft_new_env_node(char *key, char *value)
 {
-	t_env *new_node = malloc(sizeof(t_env));
-	if(!new_node)
-		return(NULL);
-	new_node->key=key;
-	new_node->value=value;
-	new_node->next=NULL;
-	return(new_node);
+	t_env	*new_node;
+
+	new_node = malloc(sizeof(t_env));
+	if (!new_node)
+		return (NULL);
+	new_node->key = key;
+	new_node->value = value;
+	new_node->next = NULL;
+	return (new_node);
 }
 
 /**
@@ -65,9 +67,54 @@ t_env	*ft_copy_env(char  **env)
 	}
 	return(env_list);
 }
+void	ft_remove_env_node(t_env **head, char *key)
+{
+	t_env	*tmp;
+	t_env	*prev;
+	int		key_len;
+
+	if (!head || !*head || !key)
+		return ;
+	tmp = *head;
+	prev = NULL;
+	key_len = ft_strlen(key);
+	while (tmp)
+	{
+		if (ft_strncmp(tmp->key, key, key_len) == 0 &&
+			tmp->key[key_len] == '\0')
+		{
+			if (prev)
+				prev->next = tmp->next;
+			else
+				*head = tmp->next;
+			free(tmp->key);
+			free(tmp->value);
+			free(tmp);
+			return ;
+		}
+		prev = tmp;
+		tmp = tmp->next;
+	}
+}
+
+void	ft_set_env(t_data *data, char *key, char *value)
+{
+	t_env	*node;
+
+	node = ft_get_env_node(data->env, key);
+	if (node)
+	{
+		free(node->value);
+		node->value = ft_strdup(value);
+		free(key);
+	}
+	else
+		ft_env_add_back(&data->env, ft_new_env_node(key, ft_strdup(value)));
+}
 
 /**
  * Helper function to know the size
+...
  * of the env linked list
  */
 int	ft_env_size(t_env *env)
@@ -82,9 +129,26 @@ int	ft_env_size(t_env *env)
 	}
 	return (count);
 }
+t_env	*ft_get_env_node(t_env *env, char *key)
+{
+	int		key_len;
+
+	if (!env || !key)
+		return (NULL);
+	key_len = ft_strlen(key);
+	while (env)
+	{
+		if (ft_strncmp(env->key, key, key_len) == 0 &&
+			env->key[key_len] == '\0')
+			return (env);
+		env = env->next;
+	}
+	return (NULL);
+}
 
 /**
  * Function to conver the linked list that contains
+...
  * the env data into a char ** in order the execv
  * function can use it
  */

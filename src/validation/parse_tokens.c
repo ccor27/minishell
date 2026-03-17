@@ -38,10 +38,8 @@ void	ft_parse_and_store(char *cmd, t_data *data)
 	int i;
 
 	i = 0;
-	//loop to go character to character in the user's prompt
 	while (cmd[i])
 	{
-		//skip the spaces in the start and after a space found
 		if(cmd[i]==' ' || cmd[i]=='\t')
 		{
 			i++;
@@ -82,7 +80,7 @@ void	ft_handle_word(int *i, char *cmd, t_data *data)
 void	ft_handle_separator(int *i, char *cmd, t_data *data)
 {
 	t_token_type token_type;
-	//to validate if we have a >> or <<
+
 	if((cmd[*i] == '<' && cmd[*i + 1] == '<') || (cmd[*i] == '>' && cmd[*i + 1] == '>'))
 	{
 		if(cmd[*i] == '<')

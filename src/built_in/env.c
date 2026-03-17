@@ -1,22 +1,26 @@
 #include "minishell.h"
 
-//TODO: test this
-int ft_env(t_data *data)
+/**
+ * Implementation of the env built-in.
+ * Displays the current environment variables.
+ * Note: Per subject, env with no options or arguments.
+ */
+void	ft_env(t_data *data)
 {
-    t_env   *tmp;
+	t_env	*tmp;
 
-    if (!data || !data->env)
-        return (1);
-
-    tmp = data->env;
-    while (tmp)
-    {
-        // Only print if there is a value attached!
-        if (tmp->value)
-        {
-            printf("%s=%s\n", tmp->key, tmp->value);
-        }
-        tmp = tmp->next;
-    }
-    return (0); // Success
+	if (!data || !data->env)
+		return ;
+	tmp = data->env;
+	while (tmp)
+	{
+		if (tmp->value)
+		{
+			ft_putstr_fd(tmp->key, 1);
+			ft_putstr_fd("=", 1);
+			ft_putendl_fd(tmp->value, 1);
+		}
+		tmp = tmp->next;
+	}
+	data->exit_code = 0;
 }

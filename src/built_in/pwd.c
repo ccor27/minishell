@@ -1,19 +1,21 @@
 #include "minishell.h"
 
-//TODO: test this
-int	ft_pwd(t_cmd *cmd)
+/**
+ * Implementation of the pwd built-in.
+ * Displays the current working directory.
+ */
+void	ft_pwd(t_data *data)
 {
-	char    *cwd;
+	char	cwd[4096];
 
-    (void)cmd;
-
-    cwd = getcwd(NULL, 0);
-    if (!cwd)
-    {
-        perror("minishell: pwd");
-        return (1);
-    }
-    printf("%s\n", cwd);
-    free(cwd);
-    return (0);
+	if (getcwd(cwd, sizeof(cwd)))
+	{
+		ft_putendl_fd(cwd, 1);
+		data->exit_code = 0;
+	}
+	else
+	{
+		perror("pwd");
+		data->exit_code = 1;
+	}
 }

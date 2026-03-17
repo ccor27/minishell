@@ -49,25 +49,39 @@ int	ft_count_args(t_token *head)
 	return (count);
 }
 
-//TODO: pass the data in order to free in case of error
-void    ft_hanlde_cmd_parse_redirections(t_token **tmp, t_cmd *cmd)
+/**
+ * Parses a redirection and its target (file or delimiter), evaluates
+ * here-doc expansion rules, and adds it to the command's redirect list.
+ */
+void	ft_hanlde_cmd_parse_redirections(t_token **tmp, t_cmd *cmd)
 {
-    t_redirect *new_redir;
+	t_redirect	*new_redir;
+	char		*delimiter;
+	int			expand;
 
-    if((*tmp)->next && (*tmp)->next->type == WORD)
-    {
-        new_redir = ft_new_redirect((*tmp)->type, (*tmp)->next->content);
-        ft_redir_add_back(&cmd->redirects, new_redir);
-        (*tmp) = (*tmp)->next->next;
-    }
-    else //handle possible error
-    {
-        if(*tmp)
-            *tmp=(*tmp)->next;
-    }
+	if ((*tmp)->next && (*tmp)->next->type == WORD)
+	{
+		delimiter = ft_strdup((*tmp)->next->content);
+		expand = 1;
+		if ((*tmp)->type == HERE_DOC)
+		{
+			if (ft_contains_quotes(delimiter))
+				expand = 0;
+			delimiter = ft_remove_quotes_str(delimiter);
+		}
+		new_redir = ft_new_redirect((*tmp)->type, delimiter, expand);
+		free(delimiter);
+		ft_redir_add_back(&cmd->redirects, new_redir);
+		(*tmp) = (*tmp)->next->next;
+	}
+	else if (*tmp)
+		*tmp = (*tmp)->next;
 }
 
-//TODO: pass the data in order to free in case of error
+/**
+ * Function to fill up a command node from a token
+ * node
+ */
 void	ft_fill_up_cmd(t_token **tmp,t_cmd *cmd, int *i)
 {
 			while (*tmp && (*tmp)->type != PIPE)
@@ -82,6 +96,9 @@ void	ft_fill_up_cmd(t_token **tmp,t_cmd *cmd, int *i)
 		}
 }
 
+/**
+ * Function to convert the tokens into commands
+ */
 void	ft_parse_cmd(t_token *head, t_data *data)
 {
 	int		num_args;

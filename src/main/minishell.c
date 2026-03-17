@@ -49,18 +49,24 @@ int main(int argc, char **argv, char **envp)
         if(input[0]!='\0')
         {
             add_history(input);
+            if (ft_check_unclosed_quotes(input))
+            {
+                ft_putendl_fd("minishell: syntax error: unclosed quote", 2);
+                data.exit_code = 1;
+                free(input);
+                continue;
+            }
             ft_parse_and_store(input,&data);
-            //TODO: what should we do if the are any unclose quote?
             ft_parse_cmd(data.tokens,&data);
             ft_here_doc(&data);
             ft_expanders(&data);
-            //validate if there are in built commands
-            //execute commands
+            ft_executor(&data);
             //ft_print_tokens(&data.tokens);
-            ft_print_cmds(data.cmds);
+            //ft_print_cmds(data.cmds);
             ft_free_data(&data);
         }
         free(input);
     }
+    ft_free_env(&data.env);
     return (0);
 }
