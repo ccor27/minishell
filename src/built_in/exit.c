@@ -8,7 +8,9 @@ int	ft_is_numeric(char *str)
 	int	i;
 
 	i = 0;
-	if (str[i] == '-' || str[i] == '+')
+	if (!str || !str[0])
+		return (0);
+	if (str[i] == '+' || str[i] == '-')
 		i++;
 	if (!str[i])
 		return (0);
@@ -26,29 +28,29 @@ int	ft_is_numeric(char *str)
  */
 void	ft_exit(t_cmd *cmd, t_data *data)
 {
-	int	exit_code;
+	long long	exit_code;
 
-	ft_putendl_fd("exit", 1);
-	if (!cmd->args[1])
+	if (isatty(STDIN_FILENO))
+		ft_putendl_fd("exit", 1);
+	if (cmd->args[1])
 	{
-		ft_free_data(data);
-		exit(0);
+		if (!ft_is_numeric(cmd->args[1]))
+		{
+			ft_putstr_fd("minishell: exit: ", 2);
+			ft_putstr_fd(cmd->args[1], 2);
+			ft_putendl_fd(": numeric argument required", 2);
+			ft_free_data(data);
+			exit(2);
+		}
+		if (cmd->args[2])
+		{
+			ft_putendl_fd("minishell: exit: too many arguments", 2);
+			data->exit_code = 1;
+			return ;
+		}
+		exit_code = ft_atoi(cmd->args[1]);
+		data->exit_code = (int)(exit_code % 256);
 	}
-	if (!ft_is_numeric(cmd->args[1]))
-	{
-		ft_putstr_fd("minishell: exit: ", 2);
-		ft_putstr_fd(cmd->args[1], 2);
-		ft_putendl_fd(": numeric argument required", 2);
-		ft_free_data(data);
-		exit(2);
-	}
-	if (cmd->args[2])
-	{
-		ft_putendl_fd("minishell: exit: too many arguments", 2);
-		data->exit_code = 1;
-		return ;
-	}
-	exit_code = ft_atoi(cmd->args[1]);
 	ft_free_data(data);
-	exit(exit_code % 256);
+	exit(data->exit_code);
 }

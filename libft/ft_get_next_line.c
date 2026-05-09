@@ -110,6 +110,24 @@ int	ft_read(int fd, char **stash, char **buffer)
 }
 
 // Function that is called from the main
+// char	*get_next_line(int fd)
+// {
+// 	static char	*stash;
+// 	char		*line;
+// 	char		*buffer;
+
+// 	if (fd < 0 || BUFFER_SIZE <= 0)
+// 		return (NULL);
+// 	buffer = (char *)malloc(sizeof(char) * (BUFFER_SIZE + 1));
+// 	if (!buffer)
+// 		return (NULL);
+// 	if (!ft_read(fd, &stash, &buffer))
+// 		return (free_two(&stash, &buffer));
+// 	free(buffer);
+// 	line = ft_get_line(stash);
+// 	ft_update_stash(&stash);
+// 	return (line);
+// }
 char	*get_next_line(int fd, int flush)
 {
 	static char	*stash;

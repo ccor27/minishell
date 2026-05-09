@@ -9,6 +9,7 @@
 #include <signal.h> //for signals
 # include <sys/wait.h>
 #include <fcntl.h>
+#include <unistd.h>
 #include "libft.h"
 //structs
 
@@ -101,8 +102,10 @@ struct s_cmd
 void	ft_init_data_struct(t_data *data, char **envp);
 
 //signals.c
-void handle_sigint(int sig);
-void print_header(void);
+void	handle_sigint(int sig);
+void	ft_init_signals(void);
+void	ft_exec_signals(void);
+void	print_header(void);
 
 //parse_tokens.c
 void	ft_parse_and_store(char *cmd, t_data *data);
@@ -145,6 +148,7 @@ char	**ft_env_to_array(t_env *env_list);
 //here_doc_handler.c
 void	ft_here_doc_store_data(t_data *data, t_redirect *redir, int tmp_fd);
 void    ft_here_doc(t_data *data);
+void	ft_cleanup_heredocs(t_cmd *cmds);
 
 //free_helper.c
 void    ft_free_tokens(t_token **tokens);
@@ -189,11 +193,13 @@ void	ft_exit(t_cmd *cmd, t_data *data);
 
 //export.c
 void	ft_swap_env(t_env *a, t_env *b);
-void ft_print_export_node(t_env *node);
-void ft_print_sorted_env(t_data *data);
 void	ft_export_arg(char *arg, t_data *data);
 void	ft_export(t_cmd *cmd, t_data *data);
 void	ft_free_array(char **arr);
+
+//export_utils.c
+void ft_print_export_node(t_env *node);
+void ft_print_sorted_env(t_data *data);
 
 //pwd.c
 void	ft_pwd(t_data *data);
@@ -207,10 +213,14 @@ int	ft_handle_output_redir(t_redirect *redir);
 int	ft_apply_redirections(t_cmd *cmd);
 
 //executor.c
-void	ft_execute_multiple(t_data *data);
 void	ft_executor_single(t_data *data);
 void	ft_executor(t_data *data);
 int ft_execute_builtin(t_cmd *cmd, t_data *data);
+
+//execute_multiple.c
+void	ft_execute_multiple(t_data *data);
+void	ft_handle_child_process(t_cmd *cmd, t_data *data, int *fd, int prev_fd);
+void	ft_wait_pipeline(t_data *data, pid_t last_pid);
 
 //execute_external.c
 char	**get_path_array(t_data *data);

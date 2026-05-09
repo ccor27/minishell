@@ -1,60 +1,22 @@
 #include "minishell.h"
 
 /**
- * Swaps two nodes data for the sorting.
+ * Checks if a string is a valid identifier.
  */
-void	ft_swap_env(t_env *a, t_env *b)
+int	ft_is_valid_identifier(char *key)
 {
-	char	*tmp_key;
-	char	*tmp_value;
+	int	i;
 
-	tmp_key = a->key;
-	tmp_value = a->value;
-	a->key = b->key;
-	a->value = b->value;
-	b->key = tmp_key;
-	b->value = tmp_value;
-}
-
-void ft_print_export_node(t_env *node)
-{
-    ft_putstr_fd("declare -x ", 1);
-    ft_putstr_fd(node->key, 1);
-    if (node->value)
-    {
-        ft_putstr_fd("=\"", 1);
-        ft_putstr_fd(node->value, 1);
-        ft_putstr_fd("\"", 1);
-    }
-    ft_putendl_fd("", 1);
-}
-/**
- * Prints the environment sorted alphabetically.
- */
-void ft_print_sorted_env(t_data *data)
-{
-    t_env   *sorted;
-    char    **env_arr;
-    t_env   *i;
-    t_env   *j;
-
-    env_arr = ft_env_to_array(data->env);
-    sorted = ft_copy_env(env_arr);
-    ft_free_array(env_arr); // FIX 1: Free the double array!
-    i = sorted;
-    while (i)
-    {
-        j = i->next;
-        while (j)
-        {
-            if (ft_strncmp(i->key, j->key, ft_strlen(i->key) + 1) > 0)
-                ft_swap_env(i, j);
-            j = j->next;
-        }
-        ft_print_export_node(i);
-        i = i->next;
-    }
-    ft_free_env(&sorted); // FIX 2: Free the temporary sorted list!
+	i = 0;
+	if (!key || (!ft_isalpha(key[0]) && key[0] != '_'))
+		return (0);
+	while (key[i])
+	{
+		if (!ft_isalnum(key[i]) && key[i] != '_')
+			return (0);
+		i++;
+	}
+	return (1);
 }
 
 /**
@@ -66,18 +28,35 @@ void	ft_export_arg(char *arg, t_data *data)
 	char	*value;
 	char	*equal_pos;
 
+	value = NULL;
 	equal_pos = ft_strchr(arg, '=');
 	if (equal_pos)
-	{
 		key = ft_substr(arg, 0, equal_pos - arg);
+	else
+		key = ft_strdup(arg);
+	if (!ft_is_valid_identifier(key))
+	{
+		ft_putstr_fd("minishell: export: `", 2);
+		ft_putstr_fd(arg, 2);
+		ft_putendl_fd("': not a valid identifier", 2);
+		data->exit_code = 1;
+		if (key)
+			free(key);
+		if (value)
+			free(value);
+		return ;
+	}
+	if (equal_pos)
+	{
 		value = ft_strdup(equal_pos + 1);
 		ft_set_env(data, key, value);
 		free(value);
 	}
 	else
 	{
-		if (!ft_get_env_node(data->env, arg))
-			ft_env_add_back(&data->env, ft_new_env_node(ft_strdup(arg), NULL));
+		if (!ft_get_env_node(data->env, key))
+			ft_env_add_back(&data->env, ft_new_env_node(ft_strdup(key), NULL));
+		free(key);
 	}
 }
 
@@ -95,12 +74,28 @@ void	ft_export(t_cmd *cmd, t_data *data)
 		return ;
 	}
 	i = 1;
+	data->exit_code = 0;
 	while (cmd->args[i])
 	{
 		ft_export_arg(cmd->args[i], data);
 		i++;
 	}
-	data->exit_code = 0;
+}
+
+/**
+ * Swaps two nodes data for the sorting.
+ */
+void	ft_swap_env(t_env *a, t_env *b)
+{
+	char	*tmp_key;
+	char	*tmp_value;
+
+	tmp_key = a->key;
+	tmp_value = a->value;
+	a->key = b->key;
+	a->value = b->value;
+	b->key = tmp_key;
+	b->value = tmp_value;
 }
 
 void	ft_free_array(char **arr)
@@ -117,4 +112,3 @@ void	ft_free_array(char **arr)
 	}
 	free(arr);
 }
-

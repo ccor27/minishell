@@ -9,7 +9,8 @@ SRC_VALID   = parse_tokens.c parse_cmd.c
 SRC_PROCESS = here_doc_handler.c expanders.c expanders_utils.c execute_external.c execute_redirect.c \
 				executor.c
 SRC_ERRORS	= error_handler.c free_helper.c
-SRC_BUILT_IN = cd.c echo.c env.c exit.c export.c pwd.c unset.c
+SRC_BUILT_IN = cd.c echo.c env.c exit.c export.c pwd.c unset.c export_utils.c
+SRC_EXECUTION = execute_multiple.c
 
 INCLUDES    = -I includes -I$(LIBFT_DIR)
 
@@ -19,7 +20,8 @@ SRC_FILES   = $(addprefix main/,$(SRC_MAIN)) \
               $(addprefix validation/,$(SRC_VALID)) \
 			  $(addprefix process/,$(SRC_PROCESS)) \
 			  $(addprefix errors/,$(SRC_ERRORS))	\
-			  $(addprefix built_in/,$(SRC_BUILT_IN))
+			  $(addprefix built_in/,$(SRC_BUILT_IN)) \
+			  $(addprefix execution/,$(SRC_EXECUTION))
 
 # Add 'src/' prefix to everything
 SRC         = $(addprefix src/,$(SRC_FILES))

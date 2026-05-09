@@ -78,3 +78,27 @@ void	ft_here_doc(t_data *data)
 		tmp = tmp->next;
 	}
 }
+
+/**
+ * @brief Deletes temporary files created for here-docs.
+ * 
+ * @param cmds Linked list of commands.
+ */
+void	ft_cleanup_heredocs(t_cmd *cmds)
+{
+	t_cmd		*tmp_cmd;
+	t_redirect	*tmp_redir;
+
+	tmp_cmd = cmds;
+	while (tmp_cmd)
+	{
+		tmp_redir = tmp_cmd->redirects;
+		while (tmp_redir)
+		{
+			if (tmp_redir->type == HERE_DOC)
+				unlink(tmp_redir->file);
+			tmp_redir = tmp_redir->next;
+		}
+		tmp_cmd = tmp_cmd->next;
+	}
+}

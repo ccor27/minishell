@@ -26,7 +26,7 @@ char	*ft_get_cmd_path(char *cmd, t_data *data)
 	char	*full;
 	int		i;
 
-	if (access(cmd, X_OK) == 0)
+	if (ft_strchr(cmd, '/') && access(cmd, X_OK) == 0)
 		return (ft_strdup(cmd));
 	paths = get_path_array(data);
 	i = 0;
@@ -48,34 +48,31 @@ char	*ft_get_cmd_path(char *cmd, t_data *data)
 }
 
 /**
- * Forks a child process and uses execve to run the external command.
- * The parent waits and captures the exit status.
+ * Executes the external command.
+ * If called within a child process, it doesn't need to fork again.
  */
 void	ft_execute_external(t_cmd *cmd, t_data *data)
 {
-	pid_t	pid;
-	int		status;
 	char	**envp;
 
-	pid = fork();
-	if (pid == 0)
+	if (access(cmd->args[0], F_OK) == 0 && ft_strchr(cmd->args[0], '/'))
 	{
-		cmd->cmd_path = ft_get_cmd_path(cmd->args[0], data);
-		if (!cmd->cmd_path)
+		if (access(cmd->args[0], X_OK) == -1)
 		{
-			ft_putstr_fd("minishell: command not found: ", 2);
-			ft_putendl_fd(cmd->args[0], 2);
-			exit(127);
+			ft_putstr_fd("minishell: ", 2);
+			perror(cmd->args[0]);
+			exit(126);
 		}
-		envp = ft_env_to_array(data->env);
-		execve(cmd->cmd_path, cmd->args, envp);
-		perror("minishell");
-		exit(126);
 	}
-	else if (pid > 0)
+	cmd->cmd_path = ft_get_cmd_path(cmd->args[0], data);
+	if (!cmd->cmd_path)
 	{
-		waitpid(pid, &status, 0);
-		if (WIFEXITED(status))
-			data->exit_code = WEXITSTATUS(status);
+		ft_putstr_fd("minishell: command not found: ", 2);
+		ft_putendl_fd(cmd->args[0], 2);
+		exit(127);
 	}
+	envp = ft_env_to_array(data->env);
+	execve(cmd->cmd_path, cmd->args, envp);
+	perror("minishell");
+	exit(126);
 }

@@ -98,6 +98,7 @@ int					ft_printf(const char *string, ...);
 char				**ft_split_quote(const char *s, char c, int i, int j);
 // gnl
 char				*get_next_line(int fd, int flush);
+//char				*get_next_line(int fd);
 int					ft_read(int fd, char **stash, char **buffer);
 void				ft_update_stash(char **stash);
 char				*ft_get_line(char *stash);
